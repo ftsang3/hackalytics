@@ -52,6 +52,9 @@ from matplotlib.figure import Figure
 df = pd.read_csv("02_02_21_Scrimmage.csv")
 
 
+# All units are in feet
+
+
 
 
 class MainWindow(QWidget):
@@ -231,7 +234,39 @@ class MainWindow(QWidget):
                 ax.set_zlim(-25, 25)
                 
                 ax.dist = 4.2
-                '''                
+                '''           
+                
+                # right side batter view #1
+                '''
+                ax.view_init(elev = 3.3, azim = -179)
+                ax.set_xlim(-20, 80)
+                ax.set_ylim(-25, 25)
+                ax.set_zlim(-25, 25)
+                
+                ax.dist = 0.7
+                '''
+
+                # right side batter view #2 - Lok
+                '''
+                ax.view_init(elev = 2.8, azim = -178.7)
+                ax.set_xlim(0, 100)
+                ax.set_ylim(-25, 25)
+                ax.set_zlim(-25, 25)
+                
+                ax.dist = 0.9
+                '''
+                
+                # right side batter view #3 - close up
+                '''
+                ax.view_init(elev = 2, azim = -178.9)
+                ax.set_xlim(40, 140)
+                ax.set_ylim(-25, 25)
+                ax.set_zlim(-25, 25)
+                
+                ax.dist = 1.1
+                '''
+
+                
                 
                 for pitchno in pitchnumberslist:
                     pitchno = pitchno.strip()
@@ -246,16 +281,25 @@ class MainWindow(QWidget):
                     pitchtraj_z2 = df['PitchTrajectoryZc2'][int(pitchno)-1]
                     zonetime = df['ZoneTime'][int(pitchno)-1]
                     pitchtype = df['TaggedPitchType'][int(pitchno)-1]
+                    pitchcall = df['PitchCall'][int(pitchno)-1]
                                         
                     if (pitchtype == "Curveball"):
                         col = "blue"
-                        mark = "o"
                     elif (pitchtype == "Fastball"):
                         col = "red"
-                        mark = "^"
                     elif (pitchtype == "ChangeUp"):
                         col = "green"
-                        mark = "s"
+                    
+                      
+                    if (pitchcall == "BallCalled"):
+                        markcol = "blue"
+                    elif (pitchcall == "InPlay"):
+                        markcol = "green"
+                    elif (pitchcall == "StrikeSwinging"):
+                        markcol = "red"
+                    elif (pitchcall == "FoulBall"):
+                        markcol = "orange"
+                    
                     
                     t = np.arange(0, zonetime, 0.001)
                     
@@ -289,8 +333,15 @@ class MainWindow(QWidget):
                     
                     ax.plot3D(x, y, z, color = col)
                     
-                    ax.scatter(xfunc(zonetime), yfunc(zonetime), zfunc(zonetime), color = col, marker = mark)
+                    #color = color of marker
+                    #marker = shape of marker
+                    #s = size of marker in points^2
+                    #ax.scatter(xfunc(zonetime), yfunc(zonetime), zfunc(zonetime), color = markcol, s = 122.5)
                     #ax.set_title('3D Parametric Plot')
+                    
+                    strikezone_circle = Circle((yfunc(zonetime), zfunc(zonetime)), 0.11975, fill = True, color = markcol)
+                    ax.add_patch(strikezone_circle)
+                    art3d.pathpatch_2d_to_3d(strikezone_circle, zdir = 'x', z = 1.1)                    
                     
                     # Set axes label
                     #ax.set_xlabel('x', labelpad=20)
@@ -322,7 +373,9 @@ class MainWindow(QWidget):
                 ax.add_patch(polygon)
                 art3d.pathpatch_2d_to_3d(polygon)
                 
-                strikezone = Rectangle((-0.70833, 1.5), 1.41666, 2.33333, fill = False, color = 'b')
+                # y = 1.5 to 3.6 feet - originally was 2.3333 feet instead of 2.1 feet
+                # x = ???
+                strikezone = Rectangle((-0.70833, 1.5), 1.41666, 2.1, fill = False, color = 'b')
                 ax.add_patch(strikezone)
                 art3d.pathpatch_2d_to_3d(strikezone, zdir = 'x', z = 1.1)
                 
@@ -372,9 +425,93 @@ class MainWindow(QWidget):
                 ax = plt.axes(projection='3d')
                 ax.grid()
                 
+                # default ranges
+                '''
                 ax.set_xlim(-20, 80)
                 ax.set_ylim(-25, 25)
                 ax.set_zlim(-25, 25)
+                '''
+                
+                # top right view 1 - good
+                '''
+                ax.view_init(elev = 5., azim = -172)
+                ax.set_xlim(-20, 80)
+                ax.set_ylim(-25, 25)
+                ax.set_zlim(-25, 25)
+                
+                ax.dist = 1.5
+                '''
+                
+                # top right view 2
+                '''
+                ax.view_init(elev = 10., azim = -169)
+                ax.set_xlim(-20, 80)
+                ax.set_ylim(-25, 25)
+                ax.set_zlim(-25, 25)
+                
+                ax.dist = 1.8
+                '''
+                
+                # batter view - good
+                #'''
+                ax.view_init(elev = 3., azim = -180)
+                ax.set_xlim(-20, 80)
+                ax.set_ylim(-25, 25)
+                ax.set_zlim(-25, 25)
+                
+                ax.dist = 0.8
+                #'''
+                
+                # top down view
+                '''
+                ax.view_init(elev = 90., azim = 180)
+                ax.set_xlim(-20, 80)
+                ax.set_ylim(-25, 25)
+                ax.set_zlim(-25, 25)
+                
+                ax.dist = 5.5
+                '''
+                
+                # right side view
+                '''
+                ax.view_init(elev = 0., azim = -90)
+                ax.set_xlim(-20, 80)
+                ax.set_ylim(-25, 25)
+                ax.set_zlim(-25, 25)
+                
+                ax.dist = 4.2
+                '''           
+                
+                # right side batter view #1
+                '''
+                ax.view_init(elev = 3.3, azim = -179)
+                ax.set_xlim(-20, 80)
+                ax.set_ylim(-25, 25)
+                ax.set_zlim(-25, 25)
+                
+                ax.dist = 0.7
+                '''
+
+                # right side batter view #2 - Lok
+                '''
+                ax.view_init(elev = 2.8, azim = -178.7)
+                ax.set_xlim(0, 100)
+                ax.set_ylim(-25, 25)
+                ax.set_zlim(-25, 25)
+                
+                ax.dist = 0.9
+                '''
+                
+                # right side batter view #3 - close up
+                '''
+                ax.view_init(elev = 2, azim = -178.9)
+                ax.set_xlim(40, 140)
+                ax.set_ylim(-25, 25)
+                ax.set_zlim(-25, 25)
+                
+                ax.dist = 1.1
+                '''
+
                 
                 for pitchno in pitchnumberslist:
                     pitchtraj_x0 = df['PitchTrajectoryXc0'][int(pitchno)]
@@ -387,14 +524,25 @@ class MainWindow(QWidget):
                     pitchtraj_z1 = df['PitchTrajectoryZc1'][int(pitchno)]
                     pitchtraj_z2 = df['PitchTrajectoryZc2'][int(pitchno)]
                     zonetime = df['ZoneTime'][int(pitchno)]
-                    pitchtype = df['TaggedPitchType'][int(pitchno)]                    
-                    
+                    pitchtype = df['TaggedPitchType'][int(pitchno)]
+                    pitchcall = df['PitchCall'][int(pitchno)]
+                                        
                     if (pitchtype == "Curveball"):
                         col = "blue"
                     elif (pitchtype == "Fastball"):
                         col = "red"
                     elif (pitchtype == "ChangeUp"):
                         col = "green"
+                    
+                    if (pitchcall == "BallCalled"):
+                        markcol = "blue"
+                    elif (pitchcall == "InPlay"):
+                        markcol = "green"
+                    elif (pitchcall == "StrikeSwinging"):
+                        markcol = "red"
+                    elif (pitchcall == "FoulBall"):
+                        markcol = "orange"
+                    
                                         
                     t = np.arange(0, zonetime, 0.001)
                     
@@ -428,8 +576,14 @@ class MainWindow(QWidget):
                     
                     ax.plot3D(x, y, z, color = col)
                     
-                    ax.scatter(xfunc(zonetime), yfunc(zonetime), zfunc(zonetime), color = col)
+                    #ax.scatter(xfunc(zonetime), yfunc(zonetime), zfunc(zonetime), color = col)
                     #ax.set_title('3D Parametric Plot')
+                    
+                    strikezone_circle = Circle((yfunc(zonetime), zfunc(zonetime)), 0.11975, fill = True, color = markcol)
+                    ax.add_patch(strikezone_circle)
+                    art3d.pathpatch_2d_to_3d(strikezone_circle, zdir = 'x', z = 1.1)                    
+                    
+
                     
                     # Set axes label
                     #ax.set_xlabel('x', labelpad=20)
@@ -457,14 +611,15 @@ class MainWindow(QWidget):
                 ax.add_patch(pitchers_rubber)
                 art3d.pathpatch_2d_to_3d(pitchers_rubber)
                 
-                polygon = RegularPolygon((0, 0), numVertices = 5, radius = 1, orientation = 1.57)
+                polygon = RegularPolygon((.45, 0), numVertices = 5, radius = 1, orientation = 1.57)
                 ax.add_patch(polygon)
                 art3d.pathpatch_2d_to_3d(polygon)
         
-                strikezone = Rectangle((-0.70833, 1.5), 1.41666, 2.33333, fill = False, color = 'b')
+                strikezone = Rectangle((-0.70833, 1.5), 1.41666, 2.1, fill = False, color = 'b')
                 ax.add_patch(strikezone)
                 art3d.pathpatch_2d_to_3d(strikezone, zdir = 'x', z = 1.1)
                 
+                '''
                 thirdbase = Rectangle((63, 63.5), 1.25, 1.25, angle = 45, fill = False, color = 'b')
                 ax.add_patch(thirdbase)
                 art3d.pathpatch_2d_to_3d(thirdbase)
@@ -476,6 +631,7 @@ class MainWindow(QWidget):
                 secondbase = Rectangle((127, 0), 1.25, 1.25, angle = 45, fill = False, color = 'b')
                 ax.add_patch(secondbase)
                 art3d.pathpatch_2d_to_3d(secondbase)
+                '''
         
                 """                                                                                                                                                    
                 Scaling is done from here...                                                                                                                           
