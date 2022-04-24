@@ -187,6 +187,7 @@ class MainWindow(QWidget):
                 '''
                 
                 # top right view 1 - good
+                # zoom in more
                 '''
                 ax.view_init(elev = 5., azim = -172)
                 ax.set_xlim(-20, 80)
@@ -206,14 +207,14 @@ class MainWindow(QWidget):
                 ax.dist = 1.8
                 '''
                 
-                # batter view - good
+                # umpire view - good
                 #'''
                 ax.view_init(elev = 3., azim = -180)
                 ax.set_xlim(-20, 80)
                 ax.set_ylim(-25, 25)
                 ax.set_zlim(-25, 25)
                 
-                ax.dist = 0.8
+                ax.dist = 0.7
                 #'''
                 
                 # top down view
@@ -236,7 +237,7 @@ class MainWindow(QWidget):
                 ax.dist = 4.2
                 '''           
                 
-                # right side batter view #1
+                # LLH umpire view #1
                 '''
                 ax.view_init(elev = 3.3, azim = -179)
                 ax.set_xlim(-20, 80)
@@ -256,17 +257,27 @@ class MainWindow(QWidget):
                 ax.dist = 0.9
                 '''
                 
-                # right side batter view #3 - close up
+                # LLH batter view #3 - close up - good
                 '''
                 ax.view_init(elev = 2, azim = -178.9)
                 ax.set_xlim(40, 140)
                 ax.set_ylim(-25, 25)
                 ax.set_zlim(-25, 25)
                 
-                ax.dist = 1.1
+                ax.dist = 1.5
                 '''
 
+                # RRH batter view - close up - good
+                '''
+                ax.view_init(elev = 2, azim = 1.1)
+                ax.set_xlim(40, 140)
+                ax.set_ylim(-25, 25)
+                ax.set_zlim(-25, 25)
                 
+                ax.dist = 1.5
+                '''                
+
+
                 
                 for pitchno in pitchnumberslist:
                     pitchno = pitchno.strip()
@@ -289,6 +300,7 @@ class MainWindow(QWidget):
                         col = "red"
                     elif (pitchtype == "ChangeUp"):
                         col = "green"
+                        
                     
                       
                     if (pitchcall == "BallCalled"):
@@ -336,12 +348,12 @@ class MainWindow(QWidget):
                     #color = color of marker
                     #marker = shape of marker
                     #s = size of marker in points^2
-                    #ax.scatter(xfunc(zonetime), yfunc(zonetime), zfunc(zonetime), color = markcol, s = 122.5)
+                    ax.scatter(xfunc(zonetime), yfunc(zonetime), zfunc(zonetime), color = markcol, s = 122.5, marker = "^")
                     #ax.set_title('3D Parametric Plot')
                     
-                    strikezone_circle = Circle((yfunc(zonetime), zfunc(zonetime)), 0.11975, fill = True, color = markcol)
-                    ax.add_patch(strikezone_circle)
-                    art3d.pathpatch_2d_to_3d(strikezone_circle, zdir = 'x', z = 1.1)                    
+                    #strikezone_circle = Circle((yfunc(zonetime), zfunc(zonetime)), 0.11975, fill = True, color = markcol)
+                    #ax.add_patch(strikezone_circle)
+                    #art3d.pathpatch_2d_to_3d(strikezone_circle, zdir = 'x', z = 1.1)                    
                     
                     # Set axes label
                     #ax.set_xlabel('x', labelpad=20)
