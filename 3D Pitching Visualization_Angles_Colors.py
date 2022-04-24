@@ -187,14 +187,14 @@ class MainWindow(QWidget):
                 '''
                 
                 # top right view 1 - good
-                # zoom in more
+                # zoomed in 
                 '''
                 ax.view_init(elev = 5., azim = -172)
                 ax.set_xlim(-20, 80)
                 ax.set_ylim(-25, 25)
                 ax.set_zlim(-25, 25)
                 
-                ax.dist = 1.5
+                ax.dist = 1
                 '''
                 
                 # top right view 2
@@ -269,7 +269,7 @@ class MainWindow(QWidget):
 
                 # RRH batter view - close up - good
                 '''
-                ax.view_init(elev = 2, azim = 1.1)
+                ax.view_init(elev = 2, azim = 178.9)
                 ax.set_xlim(40, 140)
                 ax.set_ylim(-25, 25)
                 ax.set_zlim(-25, 25)
@@ -293,16 +293,20 @@ class MainWindow(QWidget):
                     zonetime = df['ZoneTime'][int(pitchno)-1]
                     pitchtype = df['TaggedPitchType'][int(pitchno)-1]
                     pitchcall = df['PitchCall'][int(pitchno)-1]
-                                        
+                    playresult = df['PlayResult'][int(pitchno)-1]
+                    
+                    # color of the pitch (path of the ball) = pitchtype                    
                     if (pitchtype == "Curveball"):
                         col = "blue"
                     elif (pitchtype == "Fastball"):
                         col = "red"
                     elif (pitchtype == "ChangeUp"):
                         col = "green"
+                    else:
+                        col = "black"
                         
                     
-                      
+                    # color of the marker = pitchcall
                     if (pitchcall == "BallCalled"):
                         markcol = "blue"
                     elif (pitchcall == "InPlay"):
@@ -311,6 +315,20 @@ class MainWindow(QWidget):
                         markcol = "red"
                     elif (pitchcall == "FoulBall"):
                         markcol = "orange"
+                    else:
+                        markcol = "black"
+                        
+                    # shape of the marker = playresult
+                    if (playresult == "Single"):
+                        markshape = ">"
+                    elif (playresult == "Double"):
+                        markshape = "^"
+                    elif (playresult == "Triple"):
+                        markshape = "<"
+                    #elif (playresult == ""):
+                    #    markshape = ""
+                    else:
+                        markshape = "."
                     
                     
                     t = np.arange(0, zonetime, 0.001)
@@ -348,7 +366,7 @@ class MainWindow(QWidget):
                     #color = color of marker
                     #marker = shape of marker
                     #s = size of marker in points^2
-                    ax.scatter(xfunc(zonetime), yfunc(zonetime), zfunc(zonetime), color = markcol, s = 122.5, marker = "^")
+                    ax.scatter(xfunc(zonetime), yfunc(zonetime), zfunc(zonetime), color = markcol, s = 122.5, marker = markshape)
                     #ax.set_title('3D Parametric Plot')
                     
                     #strikezone_circle = Circle((yfunc(zonetime), zfunc(zonetime)), 0.11975, fill = True, color = markcol)
