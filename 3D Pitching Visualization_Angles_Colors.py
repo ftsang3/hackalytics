@@ -193,8 +193,9 @@ class MainWindow(QWidget):
                 ax.set_xlim(-20, 80)
                 ax.set_ylim(-25, 25)
                 ax.set_zlim(-25, 25)
-                
                 ax.dist = 1
+                marksize = 400
+                labelsize = 40
                 '''
                 
                 # top right view 2
@@ -203,19 +204,20 @@ class MainWindow(QWidget):
                 ax.set_xlim(-20, 80)
                 ax.set_ylim(-25, 25)
                 ax.set_zlim(-25, 25)
-                
                 ax.dist = 1.8
+                marksize = 
                 '''
                 
                 # umpire view - good
-                #'''
+                '''
                 ax.view_init(elev = 3., azim = -180)
                 ax.set_xlim(-20, 80)
                 ax.set_ylim(-25, 25)
                 ax.set_zlim(-25, 25)
-                
                 ax.dist = 0.7
-                #'''
+                marksize = 600
+                labelsize = 70
+                '''
                 
                 # top down view
                 '''
@@ -223,8 +225,9 @@ class MainWindow(QWidget):
                 ax.set_xlim(-20, 80)
                 ax.set_ylim(-25, 25)
                 ax.set_zlim(-25, 25)
-                
-                ax.dist = 5.5
+                ax.dist = 4.1
+                marksize = 100
+                labelsize = 20 #bad
                 '''
                 
                 # right side view
@@ -233,19 +236,31 @@ class MainWindow(QWidget):
                 ax.set_xlim(-20, 80)
                 ax.set_ylim(-25, 25)
                 ax.set_zlim(-25, 25)
-                
-                ax.dist = 4.2
+                ax.dist = 3.8
+                marksize = 100
                 '''           
                 
-                # LLH umpire view #1
+                # LLH umpire view 
                 '''
                 ax.view_init(elev = 3.3, azim = -179)
                 ax.set_xlim(-20, 80)
                 ax.set_ylim(-25, 25)
                 ax.set_zlim(-25, 25)
-                
                 ax.dist = 0.7
+                marksize = 600
+                labelsize = 80
                 '''
+                
+                # RRH umpire view 
+                '''
+                ax.view_init(elev = 3.3, azim = 179)
+                ax.set_xlim(-20, 80)
+                ax.set_ylim(-25, 25)
+                ax.set_zlim(-25, 25)
+                ax.dist = 0.7
+                marksize = 600
+                labelsize = 80
+                '''                
 
                 # right side batter view #2 - Lok
                 '''
@@ -253,19 +268,20 @@ class MainWindow(QWidget):
                 ax.set_xlim(0, 100)
                 ax.set_ylim(-25, 25)
                 ax.set_zlim(-25, 25)
-                
                 ax.dist = 0.9
+                marksize = 
                 '''
                 
                 # LLH batter view #3 - close up - good
-                '''
+                #'''
                 ax.view_init(elev = 2, azim = -178.9)
                 ax.set_xlim(40, 140)
                 ax.set_ylim(-25, 25)
                 ax.set_zlim(-25, 25)
-                
                 ax.dist = 1.5
-                '''
+                marksize = 500
+                labelsize = 70
+                #'''
 
                 # RRH batter view - close up - good
                 '''
@@ -273,8 +289,9 @@ class MainWindow(QWidget):
                 ax.set_xlim(40, 140)
                 ax.set_ylim(-25, 25)
                 ax.set_zlim(-25, 25)
-                
                 ax.dist = 1.5
+                marksize = 500
+                labelsize = 70
                 '''                
 
 
@@ -365,8 +382,9 @@ class MainWindow(QWidget):
                     
                     #color = color of marker
                     #marker = shape of marker
-                    #s = size of marker in points^2
-                    ax.scatter(xfunc(zonetime), yfunc(zonetime), zfunc(zonetime), color = markcol, s = 122.5, marker = markshape)
+                    #s = size of marker in points^
+                    ax.scatter(xfunc(zonetime), yfunc(zonetime), zfunc(zonetime), color = markcol, s = marksize, marker = markshape)
+                    ax.scatter(xfunc(zonetime), yfunc(zonetime), zfunc(zonetime), color = "yellow", s = labelsize, marker = "$"+str(pitchno)+"$")
                     #ax.set_title('3D Parametric Plot')
                     
                     #strikezone_circle = Circle((yfunc(zonetime), zfunc(zonetime)), 0.11975, fill = True, color = markcol)
@@ -442,6 +460,7 @@ class MainWindow(QWidget):
                 
                 plt.show()
                 
+                plt.savefig("test.png", format = "png")
 
                 #self.canvas.draw()
             
