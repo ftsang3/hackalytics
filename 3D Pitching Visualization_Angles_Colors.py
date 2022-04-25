@@ -292,7 +292,29 @@ class MainWindow(QWidget):
                 ax.dist = 1.5
                 marksize = 500
                 labelsize = 70
-                '''                
+                '''       
+                
+                # pitching view right side
+                #'''
+                ax.view_init(elev = 2, azim = 2)
+                ax.set_xlim(-100, 0)
+                ax.set_ylim(-25, 25)
+                ax.set_zlim(-25, 25)
+                ax.dist = 2
+                marksize = 500
+                labelsize = 70
+                #'''       
+                
+                # pitching view left side
+                #'''
+                ax.view_init(elev = 2, azim = 2)
+                ax.set_xlim(-100, 0)
+                ax.set_ylim(-25, 25)
+                ax.set_zlim(-25, 25)
+                ax.dist = 2
+                marksize = 500
+                labelsize = 70
+                #'''       
 
 
                 
