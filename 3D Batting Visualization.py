@@ -175,9 +175,43 @@ class MainWindow(QWidget):
             ax = plt.axes(projection='3d')
             ax.grid()
             
+            
+            # default ranges
+            '''
             ax.set_xlim(-10, 90)
             ax.set_ylim(-50, 50)
             ax.set_zlim(-25, 25)
+            '''
+            
+            # top right view
+            '''
+            ax.view_init(elev = 15., azim = -157)
+            ax.set_xlim(-10, 90)
+            ax.set_ylim(-50, 50)
+            ax.set_zlim(-25, 25)
+            
+            ax.dist = 9
+            '''
+
+            # batter view
+            '''
+            ax.view_init(elev = 7., azim = -180)
+            ax.set_xlim(-10, 90)
+            ax.set_ylim(-50, 50)
+            ax.set_zlim(-25, 25)
+            
+            ax.dist = 9
+            '''
+
+            # top right view
+            '''
+            ax.view_init(elev = 15., azim = -157)
+            ax.set_xlim(-10, 90)
+            ax.set_ylim(-50, 50)
+            ax.set_zlim(-25, 25)
+            
+            ax.dist = 9
+            '''                            
             
             
             for pitchno in pitchnumberslist:
@@ -1113,7 +1147,7 @@ class MainWindow(QWidget):
               return np.dot(Axes3D.get_proj(ax), scale)
             
             ax.get_proj=short_proj
-
+    '''        
     def plot(self):
         
         #input desired pitcher here. Potentially have a function that takes in pitcher's name and outputs that pitcher val
@@ -1223,26 +1257,26 @@ class MainWindow(QWidget):
         
         
         #plt.show()
+    '''
         
         
-        
-        ''' plot some random stuff '''
-        '''
-        # random data
-        data = [random.random() for i in range(10)]
+    ''' plot some random stuff '''
+    '''
+    # random data
+    data = [random.random() for i in range(10)]
 
-        # create an axis
-        ax = self.figure.add_subplot(111)
+    # create an axis
+    ax = self.figure.add_subplot(111)
 
-        # discards the old graph
-        ax.clear()
+    # discards the old graph
+    ax.clear()
 
-        # plot data
-        ax.plot(data, '*-')
+    # plot data
+    ax.plot(data, '*-')
 
-        # refresh canvas
-        self.canvas.draw()
-        '''
+    # refresh canvas
+    self.canvas.draw()
+    '''
         
 class toomanyinputswindow(QWidget):
     """
