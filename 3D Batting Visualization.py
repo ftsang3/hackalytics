@@ -184,14 +184,14 @@ class MainWindow(QWidget):
             '''
             
             # top right view
-            '''
+            #'''
             ax.view_init(elev = 15., azim = -157)
             ax.set_xlim(-10, 90)
             ax.set_ylim(-50, 50)
             ax.set_zlim(-25, 25)
             
             ax.dist = 9
-            '''
+            #'''
 
             # batter view
             '''
@@ -343,6 +343,8 @@ class MainWindow(QWidget):
                       return np.dot(Axes3D.get_proj(ax), scale)
                     
                     ax.get_proj=short_proj
+                    
+                    plt.show()
             
 
             #self.canvas.draw()
@@ -441,6 +443,8 @@ class MainWindow(QWidget):
                       return np.dot(Axes3D.get_proj(ax), scale)
                     
                     ax.get_proj=short_proj
+                    
+                    plt.show()
                     
     
                     #self.canvas.draw()
@@ -557,6 +561,8 @@ class MainWindow(QWidget):
                       return np.dot(Axes3D.get_proj(ax), scale)
                     
                     ax.get_proj=short_proj
+                    
+                    plt.show()
                     
     
                     #self.canvas.draw()
@@ -1147,6 +1153,8 @@ class MainWindow(QWidget):
               return np.dot(Axes3D.get_proj(ax), scale)
             
             ax.get_proj=short_proj
+            
+            plt.show()
     '''        
     def plot(self):
         
