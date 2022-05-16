@@ -54,6 +54,10 @@ import fpdf
 from fpdf import FPDF
 import dataframe_image as dfi
 
+import math
+import os.path
+from PIL import Image
+
 # assumes that for each plate appearance, there is only 1 pitcher and 1 batter (they do not change) --> used to determine pitcher name, pitcher side, batter name, etc.
 # speed = RelSpeed
 
@@ -75,6 +79,8 @@ for pitchnumber in df.index:
     
 pitchdictkeys = list(pitchdict.keys())
 
+
+#print(pitchdictkeys)
 #for key, value in pitchdict.items():
     #print(key, value)
 
@@ -286,6 +292,12 @@ for uniquepa in pitchdictkeys:
     plt.savefig(plotname, format = "png")
     
     plt.close('all')
+    
+    if (os.path.exists(plotname)):
+        im = Image.open(plotname)
+        cropped = im.crop((25,100,700,700))
+        cropped.save(plotname, format = "png")
+
     
     #self.canvas.draw()
     
@@ -506,6 +518,11 @@ for uniquepa in pitchdictkeys:
 
             plt.close('all')
             #self.canvas.draw()
+            
+            if (os.path.exists(plotname)):
+                im = Image.open(plotname)
+                cropped = im.crop((50,100,700,500))
+                cropped.save(plotname, format = "png")
     
 
     #self.canvas.draw()
@@ -643,6 +660,11 @@ for uniquepa in pitchdictkeys:
 
             plt.close('all')
             #self.canvas.draw()
+            
+            if (os.path.exists(plotname)):
+                im = Image.open(plotname)
+                cropped = im.crop((50,100,700,500))
+                cropped.save(plotname, format = "png")
         
         else:
             x0 = pitchtraj_x0
@@ -797,9 +819,13 @@ for uniquepa in pitchdictkeys:
 
             plt.close('all')
             #self.canvas.draw()
-
-    
-
+            
+            if (os.path.exists(plotname)):
+                im = Image.open(plotname)
+                cropped = im.crop((50,100,700,500))
+                cropped.save(plotname, format = "png")
+        
+        
 
 listpitchbat = []
 
@@ -821,11 +847,13 @@ for uniquepa in pitchdictkeys:
     elif batterside == "Left":
         batterside = "LHH"
     
-    listpitchbat.append("Pitching: \n" + str(pitchername) + " (" + pitcherside + ") \n" + "AT BAT: \n" + str(battername) + " (" + batterside + ")")
+    listpitchbat.append("Pitching: " + str(pitchername) + " (" + pitcherside + ") \n" + "AT BAT: " + str(battername) + " (" + batterside + ")")
     
     pitchnumberslist = pitchdict[uniquepa]
     
     strpitches = ""
+    i = 1
+    data1 = [] #holds list of dicts which have info for each dataframe row
     
     for pitchno in pitchnumberslist:
         pitchtype = df['TaggedPitchType'][int(pitchno)]
@@ -841,8 +869,24 @@ for uniquepa in pitchdictkeys:
         
         strpitches += str(pitchcall) + "    " + str(balls) + "-" + str(strikes) + "\n" + str(speed)[:4] + " mph " + str(pitchtype) + "\n"
     
-    listpitches.append(strpitches)
+        #a = {"#":i, "PitchCall":str(pitchcall), "B-S":(str(balls)+ "-" + str(strikes)), "Speed":(str(speed)[:4]+ " mph "), "PitchType":str(pitchtype)}
+        a = {"PitchCall":str(pitchcall), "B-S":(str(balls)+ "-" + str(strikes)), "Speed":(str(speed)[:4]+ " mph "), "PitchType":str(pitchtype)}
+        data1.append(a)
+        i += 1
+        pitchframe = pd.DataFrame(data1, columns = [*data1[0]])
 
+    pitchframe.index += 1
+    listpitches.append(pitchframe)
+    data1 = []
+    
+intcounter = 0
+
+for platedf in listpitches:
+    filename = str(pitchdictkeys[intcounter])[1:-1] + ' Table' + '.png'
+
+    dfi.export(platedf, filename)
+    
+    intcounter = intcounter + 1
     
 def create_title(title, pdf):
     
@@ -866,6 +910,8 @@ def write_to_pdf(pdf, words):
     pdf.set_font('Helvetica', '', 12)
     
     pdf.write(5, words)
+    
+
 
 class PDF(FPDF):
 
@@ -885,61 +931,85 @@ HEIGHT = 297
 pdf = FPDF(orientation = "L") # A4 (210 by 297 mm)
 
 
-'''
-First Page of PDF
-'''
-# Add Page
-pdf.add_page()
+#str(uniquepa)[1:-1] + " Pitch" + ".png"
 
-# Add title
-create_title(TITLE, pdf)
+numpages = math.floor(len(pitchdictkeys) / 2)
 
-# Add some words to PDF
-pdf.set_text_color(r=0,g=0,b=0)
-pdf.set_font('Helvetica', '', 12)
-#write_to_pdf(pdf, "Report of 1st Plate Appearance")
-#pdf.ln(15)
+intpa = 0
 
-# Add table
-pdf.set_xy(10, 30)
-pdf.multi_cell(w = 50, h = 10, txt = listpitchbat[1], border = 1, align = "L")
-pdf.set_xy(60, 30)
-pdf.multi_cell(w = 50, h = 8, txt = listpitches[1], border = 1, align = "L")
-pdf.image("1, 'Top', 2 Pitch.png",  x = 120, y = 0, h = 100, w = 100)
-pdf.image("1, 'Top', 2 Bat.png", x = 180, y = 0, h = 150, w = 120)
-pdf.ln(10)
+for i in range(numpages):
+    pdf.add_page()
+    create_title(TITLE, pdf)
+    
+    # Add some words to PDF
+    pdf.set_text_color(r=0,g=0,b=0)
+    pdf.set_font('Helvetica', '', 12)
+    #write_to_pdf(pdf, "Report of 1st Plate Appearance")
+    #pdf.ln(15)
+    
+    # Add table
+    pdf.set_xy(10, 30)
+    pdf.multi_cell(w = 80, h = 6, txt = listpitchbat[intpa], border = 1, align = "L")
+    #pdf.multi_cell(w = 50, h = 8, txt = listpitches[intpa], border = 1, align = "L")
+    filename_temp = str(pitchdictkeys[intpa])[1:-1] + " Table" + ".png"
+    if (os.path.exists(filename_temp)):
+        pdf.image(filename_temp,  x = 10, y = 45, w = 80)
+    filename_temp = str(pitchdictkeys[intpa])[1:-1] + " Pitch" + ".png"
+    if (os.path.exists(filename_temp)):
+        pdf.image(filename_temp,  x = 90, y = 0, h = 100, w = 100)
+    filename_temp = str(pitchdictkeys[intpa])[1:-1] + " Bat" + ".png"
+    if (os.path.exists(filename_temp)):
+        pdf.image(filename_temp, x = 180, y = 0, h = 100, w = 120)
+    pdf.ln(10)
+    
+    intpa = intpa + 1
+    
+    pdf.set_xy(10, 120)
+    pdf.multi_cell(w = 80, h = 6, txt = listpitchbat[intpa], border = 1, align = "L")
+    #pdf.multi_cell(w = 50, h = 8, txt = listpitches[intpa], border = 1, align = "L")
+    filename_temp = str(pitchdictkeys[intpa])[1:-1] + " Table" + ".png"
+    if (os.path.exists(filename_temp)):
+        pdf.image(filename_temp,  x = 10, y = 135, w = 80)
+    filename_temp = str(pitchdictkeys[intpa])[1:-1] + " Pitch" + ".png"
+    if (os.path.exists(filename_temp)):
+        pdf.image(filename_temp,  x = 90, y = 90, h = 100, w = 100)
+    filename_temp = str(pitchdictkeys[intpa])[1:-1] + " Bat" + ".png"
+    if (os.path.exists(filename_temp)):
+        pdf.image(filename_temp, x = 180, y = 90, h = 100, w = 120)
+    
+    intpa = intpa + 1
+    
+    # Add some words to PDF
+    #write_to_pdf(pdf, "2. The visualisations below shows the trend of total sales for Heicoders Academy and the breakdown of revenue for year 2016:")
+    
+    # Add the generated visualisations to the PDF
+    #pdf.image("resources/heicoders_annual_sales.png", 5, 200, WIDTH/2-10)
+    #pdf.image("resources/heicoders_2016_sales_breakdown.png", WIDTH/2, 200, WIDTH/2-10)
+    pdf.ln(10)
+    
+if len(pitchdictkeys) % 2 == 1:
+    pdf.add_page()
+    create_title(TITLE, pdf)
+    # Add some words to PDF
+    pdf.set_text_color(r=0,g=0,b=0)
+    pdf.set_font('Helvetica', '', 12)
+    #write_to_pdf(pdf, "Report of 1st Plate Appearance")
+    #pdf.ln(15)
+    
+    # Add table
+    pdf.set_xy(10, 30)
+    pdf.multi_cell(w = 80, h = 6, txt = listpitchbat[intpa], border = 1, align = "L")
+    #pdf.multi_cell(w = 50, h = 8, txt = listpitches[intpa], border = 1, align = "L")
+    filename_temp = str(pitchdictkeys[intpa])[1:-1] + " Table" + ".png"
+    if (os.path.exists(filename_temp)):
+        pdf.image(filename_temp,  x = 10, y = 45, w = 80)
+    filename_temp = str(pitchdictkeys[intpa])[1:-1] + " Pitch" + ".png"
+    if (os.path.exists(filename_temp)):
+        pdf.image(filename_temp,  x = 90, y = 0, h = 100, w = 100)
+    filename_temp = str(pitchdictkeys[intpa])[1:-1] + " Bat" + ".png"
+    if (os.path.exists(filename_temp)):
+        pdf.image(filename_temp, x = 180, y = 0, h = 100, w = 120)
+    pdf.ln(10)
 
-pdf.set_xy(10, 120)
-pdf.multi_cell(w = 50, h = 10, txt = listpitchbat[2], border = 1, align = "L")
-pdf.set_xy(60, 120)
-pdf.multi_cell(w = 50, h = 8, txt = listpitches[2], border = 1, align = "L")
-pdf.image("1, 'Top', 3 Pitch.png",  x = 120, y = 90, h = 100, w = 100)
-pdf.image("1, 'Top', 3 Bat.png", x = 180, y = 90, h = 150, w = 120)
 
-# Add some words to PDF
-#write_to_pdf(pdf, "2. The visualisations below shows the trend of total sales for Heicoders Academy and the breakdown of revenue for year 2016:")
-
-# Add the generated visualisations to the PDF
-#pdf.image("resources/heicoders_annual_sales.png", 5, 200, WIDTH/2-10)
-#pdf.image("resources/heicoders_2016_sales_breakdown.png", WIDTH/2, 200, WIDTH/2-10)
-pdf.ln(10)
-
-
-'''
-Second Page of PDF
-'''
-
-# Add Page
-pdf.add_page()
-
-# Add title
-create_title(TITLE, pdf)
-
-
-# Add some words to PDF
-pdf.ln(40)
-#write_to_pdf(pdf, "3. In conclusion, the year-on-year sales of Heicoders Academy continue to show a healthy upward trend. Majority of the sales could be attributed to the global sales which accounts for 58.0% of sales in 2016.")
-pdf.ln(15)
-
-# Generate the PDF
 pdf.output("GameReport.pdf", 'F')     
