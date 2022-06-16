@@ -63,7 +63,7 @@ from fpdf import FPDF
 import dataframe_image as dfi
 
 import math
-import os.path
+import os
 from PIL import Image
 
 # assumes that for each plate appearance, there is only 1 pitcher and 1 batter (they do not change) --> used to determine pitcher name, pitcher side, batter name, etc.
@@ -74,13 +74,27 @@ from PIL import Image
 
 
 #change csv inputs here
-df = pd.read_csv("20220422-GeorgiaTech-1_unverified.csv")
+
+data_file_name = "20220422-GeorgiaTech-1_unverified.csv"
+
+
+
+
+
+folder_name = data_file_name[1:-4] + " Images"
+
+if not os.path.isdir(folder_name):
+    os.mkdir(folder_name)
+
+
+df = pd.read_csv(data_file_name)
 df.set_index('PitchNo', inplace = True)
 #away team first, home team second
 teamNames = []
 teamNames.append(df["AwayTeam"][1])
 teamNames.append(df["HomeTeam"][1])
 #teamNames = ['Duke','GT']   #in Order of batting,
+
 
 pitchdict = OrderedDict()
 
@@ -302,7 +316,8 @@ for uniquepa in pitchdictkeys:
     
     # #plt.show()
     plotname = str(uniquepa)[1:-1] + " Pitch" + ".png"
-    plt.savefig(plotname, format = "png")
+    folder_plotname = os.path.join(folder_name, plotname)
+    plt.savefig(folder_plotname, format = "png")
     
     plt.close('all')
     
@@ -527,8 +542,9 @@ for uniquepa in pitchdictkeys:
             
             # plt.show()
             plotname = str(uniquepa)[1:-1] + " Bat" + ".png"
-            plt.savefig(plotname, format = "png")
-
+            folder_plotname = os.path.join(folder_name, plotname)
+            plt.savefig(folder_plotname, format = "png")
+            
             plt.close('all')
             #self.canvas.draw()
             
@@ -669,7 +685,8 @@ for uniquepa in pitchdictkeys:
             
             # plt.show()
             plotname = str(uniquepa)[1:-1] + " Bat" + ".png"
-            plt.savefig(plotname, format = "png")
+            folder_plotname = os.path.join(folder_name, plotname)
+            plt.savefig(folder_plotname, format = "png")
 
             plt.close('all')
             #self.canvas.draw()
@@ -828,7 +845,8 @@ for uniquepa in pitchdictkeys:
             
             # plt.show()
             plotname = str(uniquepa)[1:-1] + " Bat" + ".png"
-            plt.savefig(plotname, format = "png")
+            folder_plotname = os.path.join(folder_name, plotname)
+            plt.savefig(folder_plotname, format = "png")
 
             plt.close('all')
             #self.canvas.draw()
@@ -877,6 +895,7 @@ for uniquepa in pitchdictkeys:
         balls = df['Balls'][int(pitchno)]
         strikes = df['Strikes'][int(pitchno)]
         korbb = df['KorBB'][int(pitchno)]
+        numouts = df['Outs'][int(pitchno)]
         
         if playresult == "FieldersChoice":
             playresult = "FC"
@@ -894,11 +913,11 @@ for uniquepa in pitchdictkeys:
         
         if pitchno == pitchnumberslist[-1]:
             if playresult != "Undefined":
-                listpitchbat.append("Pitch: " + str(pitchername) + " (" + pitcherside + ") \n" + "Bat: " + str(battername) + " (" + batterside + ")" + " - " + str(playresult))
+                listpitchbat.append("P: " + str(pitchername) + " (" + pitcherside + ") - " + str(numouts) + " \n" + "B: " + str(battername) + " (" + batterside + ")" + " - " + str(playresult))
             elif korbb != "Undefined":
-                listpitchbat.append("Pitch: " + str(pitchername) + " (" + pitcherside + ") \n" + "Bat: " + str(battername) + " (" + batterside + ")" + " - " + str(korbb))
+                listpitchbat.append("P: " + str(pitchername) + " (" + pitcherside + ") - " + str(numouts) + " \n" + "B: " + str(battername) + " (" + batterside + ")" + " - " + str(korbb))
             else:
-                listpitchbat.append("Pitch: " + str(pitchername) + " (" + pitcherside + ") \n" + "Bat: " + str(battername) + " (" + batterside + ")" + " - " + str(pitchcall))
+                listpitchbat.append("P: " + str(pitchername) + " (" + pitcherside + ") - " + str(numouts) + " \n" + "B: " + str(battername) + " (" + batterside + ")" + " - " + str(pitchcall))
 
     pitchframe.index += 1
     listpitches.append(pitchframe)
@@ -942,14 +961,16 @@ intcounter = 0
 
 for platedf in listpitches:
     filename = str(pitchdictkeys[intcounter])[1:-1] + ' Table' + '.png'
-    dfi.export(platedf, filename)
+    folder_filename = os.path.join(folder_name, filename)
+    dfi.export(platedf, folder_filename)
     intcounter += 1
 
 intcounter = 1
 
 for pagedf in scorelist:
     fname2 = 'Page ' + str(intcounter) + ' Score' + '.png'
-    dfi.export(pagedf, fname2)
+    folder_filename = os.path.join(folder_name, fname2)
+    dfi.export(pagedf, folder_filename)
     intcounter += 1
 
 def create_title(title, pdf):
@@ -1016,23 +1037,27 @@ for i in range(numpages):
     pdf.set_xy(10, 0)
     
     filename_temp = 'Page ' + str(pagenum) + ' Score' + '.png'
-    if (os.path.exists(filename_temp)):
+    folder_filename_temp = os.path.join(folder_name, filename_temp)
+    if (os.path.exists(folder_filename_temp)):
         # print("yes")
-        pdf.image(filename_temp, x = 110, y = 5, w = 70)
+        pdf.image(folder_filename_temp, x = 110, y = 5, w = 70)
         
     # Add table
     pdf.set_xy(10, 30)
     pdf.multi_cell(w = 80, h = 6, txt = listpitchbat[intpa], border = 1, align = "L")
     #pdf.multi_cell(w = 50, h = 8, txt = listpitches[intpa], border = 1, align = "L")
     filename_temp = str(pitchdictkeys[intpa])[1:-1] + " Table" + ".png"
-    if (os.path.exists(filename_temp)):
-        pdf.image(filename_temp,  x = 10, y = 45, w = 80)
+    folder_filename_temp = os.path.join(folder_name, filename_temp)
+    if (os.path.exists(folder_filename_temp)):
+        pdf.image(folder_filename_temp,  x = 10, y = 45, w = 80)
     filename_temp = str(pitchdictkeys[intpa])[1:-1] + " Pitch" + ".png"
-    if (os.path.exists(filename_temp)):
-        pdf.image(filename_temp,  x = 105, y = 25, h = 60, w = 80)
+    folder_filename_temp = os.path.join(folder_name, filename_temp)
+    if (os.path.exists(folder_filename_temp)):
+        pdf.image(folder_filename_temp,  x = 105, y = 25, h = 60, w = 80)
     filename_temp = str(pitchdictkeys[intpa])[1:-1] + " Bat" + ".png"
-    if (os.path.exists(filename_temp)):
-        pdf.image(filename_temp, x = 200, y = 30, h = 55, w = 90)
+    folder_filename_temp = os.path.join(folder_name, filename_temp)
+    if (os.path.exists(folder_filename_temp)):
+        pdf.image(folder_filename_temp, x = 200, y = 30, h = 55, w = 90)
     pdf.ln(10)
     
     intpa += 1
@@ -1041,14 +1066,17 @@ for i in range(numpages):
     pdf.multi_cell(w = 80, h = 6, txt = listpitchbat[intpa], border = 1, align = "L")
     #pdf.multi_cell(w = 50, h = 8, txt = listpitches[intpa], border = 1, align = "L")
     filename_temp = str(pitchdictkeys[intpa])[1:-1] + " Table" + ".png"
-    if (os.path.exists(filename_temp)):
-        pdf.image(filename_temp,  x = 10, y = 135, w = 80)
+    folder_filename_temp = os.path.join(folder_name, filename_temp)
+    if (os.path.exists(folder_filename_temp)):
+        pdf.image(folder_filename_temp,  x = 10, y = 135, w = 80)
     filename_temp = str(pitchdictkeys[intpa])[1:-1] + " Pitch" + ".png"
-    if (os.path.exists(filename_temp)):
-        pdf.image(filename_temp,  x = 105, y = 115, h = 60, w = 80)
+    folder_filename_temp = os.path.join(folder_name, filename_temp)
+    if (os.path.exists(folder_filename_temp)):
+        pdf.image(folder_filename_temp,  x = 105, y = 115, h = 60, w = 80)
     filename_temp = str(pitchdictkeys[intpa])[1:-1] + " Bat" + ".png"
-    if (os.path.exists(filename_temp)):
-        pdf.image(filename_temp, x = 200, y = 120, h = 55, w = 90)
+    folder_filename_temp = os.path.join(folder_name, filename_temp)
+    if (os.path.exists(folder_filename_temp)):
+        pdf.image(folder_filename_temp, x = 200, y = 120, h = 55, w = 90)
     
     intpa += 1
     pagenum += 1
@@ -1074,23 +1102,27 @@ if len(pitchdictkeys) % 2 == 1:
     pdf.set_xy(10, 0)
     
     filename_temp = 'Page ' + str(pagenum) + ' Score' + '.png'
-    if (os.path.exists(filename_temp)):
+    folder_filename_temp = os.path.join(folder_name, filename_temp)
+    if (os.path.exists(folder_filename_temp)):
         # print("yes")
-        pdf.image(filename_temp, x = 110, y = 5, w = 70)
+        pdf.image(folder_filename_temp, x = 110, y = 5, w = 70)
         
     # Add table
     pdf.set_xy(10, 30)
     pdf.multi_cell(w = 80, h = 6, txt = listpitchbat[intpa], border = 1, align = "L")
     #pdf.multi_cell(w = 50, h = 8, txt = listpitches[intpa], border = 1, align = "L")
     filename_temp = str(pitchdictkeys[intpa])[1:-1] + " Table" + ".png"
-    if (os.path.exists(filename_temp)):
-        pdf.image(filename_temp,  x = 10, y = 45, w = 80)
+    folder_filename_temp = os.path.join(folder_name, filename_temp)
+    if (os.path.exists(folder_filename_temp)):
+        pdf.image(folder_filename_temp,  x = 10, y = 45, w = 80)
     filename_temp = str(pitchdictkeys[intpa])[1:-1] + " Pitch" + ".png"
-    if (os.path.exists(filename_temp)):
-        pdf.image(filename_temp,  x = 105, y = 25, h = 60, w = 80)
+    folder_filename_temp = os.path.join(folder_name, filename_temp)
+    if (os.path.exists(folder_filename_temp)):
+        pdf.image(folder_filename_temp,  x = 105, y = 25, h = 60, w = 80)
     filename_temp = str(pitchdictkeys[intpa])[1:-1] + " Bat" + ".png"
-    if (os.path.exists(filename_temp)):
-        pdf.image(filename_temp, x = 200, y = 30, h = 55, w = 90)
+    folder_filename_temp = os.path.join(folder_name, filename_temp)
+    if (os.path.exists(folder_filename_temp)):
+        pdf.image(folder_filename_temp, x = 200, y = 30, h = 55, w = 90)
     pdf.ln(10)
 
 pdf.output("GameReport.pdf", 'F')     
